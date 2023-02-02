@@ -1,5 +1,6 @@
 import numpy as np
 import pandas as pd
+import netCDF4
 from netCDF4 import Dataset
 from dataclasses import dataclass
 import dateutil.parser as dparser
@@ -77,3 +78,11 @@ class NCSet:
         dat['14day'] = dat['dat'].rolling(14, min_periods=1).mean()
 
         return dat
+
+    def export_nc(self, data, var, exp_path):
+
+        ds = netCDF4.Dataset(exp_path, data)
+        t = ds.createDimension('time', len(self.t))
+        lat = ds.createDimension('lat', len(self.lats))
+        lon = ds.createDimension('lon', len(self.lons))
+        value

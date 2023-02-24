@@ -27,20 +27,28 @@ Data
 #     'precip': "C:\\Datasets\\Weather Data\\Copernicus\\Precip Flux\\prAdjust_day_GFDL-ESM2G_SMHI-DBSrev930-GFD-1981-2010-postproc_rcp45_r1i1p1_20160101-20201231.nc"
 #     }
 # desktop
+files = {
+    'temp_max': "/media/disc1/Datasets/Weather Data/Copernicus/Temp Max/tasmaxAdjust_day_GFDL-ESM2G_SMHI-DBSrev930-GFD-1981-2010-postproc_rcp45_r1i1p1_20010101-20051231.nc",
+    'temp_mean': "/media/disc1/Datasets/Weather Data/Copernicus/Temp Mean/tasAdjust_day_GFDL-ESM2G_SMHI-DBSrev930-GFD-1981-2010-postproc_rcp45_r1i1p1_20010101-20051231.nc",
+    'temp_min': "/media/disc1/Datasets/Weather Data/Copernicus/Temp Min/tasminAdjust_day_GFDL-ESM2G_SMHI-DBSrev930-GFD-1981-2010-postproc_rcp45_r1i1p1_20010101-20051231.nc",
+    'precip': "/media/disc1/Datasets/Weather Data/Copernicus/Precip Flux/prAdjust_day_GFDL-ESM2G_SMHI-DBSrev930-GFD-1981-2010-postproc_rcp45_r1i1p1_20010101-20051231.nc"
+}
+
+# small files
 # files = {
-#     'temp_max': "/media/disc1/Datasets/Weather Data/Copernicus/Temp Max/tasmaxAdjust_day_GFDL-ESM2G_SMHI-DBSrev930-GFD-1981-2010-postproc_rcp45_r1i1p1_20010101-20051231.nc",
-#     'temp_mean': "/media/disc1/Datasets/Weather Data/Copernicus/Temp Mean/tasAdjust_day_GFDL-ESM2G_SMHI-DBSrev930-GFD-1981-2010-postproc_rcp45_r1i1p1_20010101-20051231.nc",
-#     'temp_min': "/media/disc1/Datasets/Weather Data/Copernicus/Temp Min/tasminAdjust_day_GFDL-ESM2G_SMHI-DBSrev930-GFD-1981-2010-postproc_rcp45_r1i1p1_20010101-20051231.nc",
-#     'precip': "/media/disc1/Datasets/Weather Data/Copernicus/Precip Flux/prAdjust_day_GFDL-ESM2G_SMHI-DBSrev930-GFD-1981-2010-postproc_rcp45_r1i1p1_20010101-20051231.nc"
+#     'temp_max': "./data/tasmaxAdjust_20010101-20010201.nc",
+#     'temp_mean': "./data/tasAdjust_20010101-20010201.nc",
+#     'temp_min': "./data/tasminAdjust_20010101-20010201.nc",
+#     'precip': "./data/prAdjust_20010101-20010201.nc"
 # }
 
 # server
-files = {
-    'temp_max': "/data/tasmaxAdjust_day_GFDL-ESM2G_SMHI-DBSrev930-GFD-1981-2010-postproc_rcp45_r1i1p1_20010101-20051231.nc",
-    'temp_mean': "/data/tasAdjust_day_GFDL-ESM2G_SMHI-DBSrev930-GFD-1981-2010-postproc_rcp45_r1i1p1_20010101-20051231.nc",
-    'temp_min': "/data/tasminAdjust_day_GFDL-ESM2G_SMHI-DBSrev930-GFD-1981-2010-postproc_rcp45_r1i1p1_20010101-20051231.nc",
-    'precip': "/data/prAdjust_day_GFDL-ESM2G_SMHI-DBSrev930-GFD-1981-2010-postproc_rcp45_r1i1p1_20010101-20051231.nc"
-}
+# files = {
+#     'temp_max': "/data/tasmaxAdjust_day_GFDL-ESM2G_SMHI-DBSrev930-GFD-1981-2010-postproc_rcp45_r1i1p1_20010101-20051231.nc",
+#     'temp_mean': "/data/tasAdjust_day_GFDL-ESM2G_SMHI-DBSrev930-GFD-1981-2010-postproc_rcp45_r1i1p1_20010101-20051231.nc",
+#     'temp_min': "/data/tasminAdjust_day_GFDL-ESM2G_SMHI-DBSrev930-GFD-1981-2010-postproc_rcp45_r1i1p1_20010101-20051231.nc",
+#     'precip': "/data/prAdjust_day_GFDL-ESM2G_SMHI-DBSrev930-GFD-1981-2010-postproc_rcp45_r1i1p1_20010101-20051231.nc"
+# }
 # for vm
 # files = {
 #     'temp_max': "./data/tasmaxAdjust_day_GFDL-ESM2G_SMHI-DBSrev930-GFD-1981-2010-postproc_rcp45_r1i1p1_20010101-20051231.nc",
@@ -100,15 +108,6 @@ ts.update_layout(paper_bgcolor='#515960', plot_bgcolor='#515960',
 analysis_tab = dbc.Card(
     dbc.CardBody(id='analysis-card',
         children=[
-            dbc.Col([
-                dbc.Row([
-                    dcc.Slider(id='time_slider',
-                               min=default_group.dates.index.min(),
-                               max=default_group.dates.index.max(),
-                               marks=default_group.slider_dict(),
-                               value=default_group.dates.index.min())
-                ])
-            ]),
             dbc.Row([dhtml.H2(f'No point selected', id='loc_label')]),
             dbc.Row([
                 dcc.Loading(dcc.Graph(id='time_series', figure=ts))
@@ -129,8 +128,14 @@ map_page = dbc.Card(
             dbc.Row([
                 dbc.Col(
                     children=[
-                        dhtml.H2(f'Date: {default_group.dates["dt"].min().date()}', id='map-date'),
                         dcc.Dropdown(id='set-select', options=dropdown_datasets, value='temp_mean'),
+                        dhtml.H2(f'Date: {default_group.dates["dt"].min().date()}', id='map-date'),
+                        dcc.Slider(id='time_slider',
+                                   min=default_group.dates.index.min(),
+                                   max=default_group.dates.index.max(),
+                                   marks=default_group.slider_dict(),
+                                   value=0,
+                                   ),
                         dcc.Loading(dcc.Graph(id='mapbox', figure=map))],
                         width=6),
                 dbc.Col(analysis_tab, width=6)
@@ -196,6 +201,7 @@ def plot_time_series(points, set):
 )
 def map_single_time(date, set):
 
+    print(date)
     new_group = open_nc.NCSet(files[set], var_names[set])
     new_df = new_group.flatten_at_single_time(date)
     lats = new_group.lats

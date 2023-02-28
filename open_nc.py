@@ -5,6 +5,75 @@ from netCDF4 import Dataset
 from dataclasses import dataclass
 import dateutil.parser as dparser
 import datetime
+from operator import itemgetter
+
+@dataclass
+class multiVarNCSet:
+    path: str
+    vars: dict()
+    def __post_init__(self):
+
+        data_grp = Dataset(self.path, 'r')
+        self.lats = data_grp.variables['lat'][:]
+        self.lons = data_grp.variables['lon'][:]
+        self.t = []
+        self.data = dict()
+        datestr = []
+
+        for n, elem in enumerate(data_grp.variables['time'][:]):
+            self.t.append(datetime.timedelta(days=round(elem)) + datetime.date(year=1850, month=1, day=1))
+            datestr.append(self.t[n].strftime('%Y-%m-%d'))
+
+        self.slider_dict = dict(zip(self.t, list(range(len(self.t)))))
+        # self.sliderDF = pd.DataFrame([self.t, datestr], columns=['date', 'datestr'])
+        # self.sliderDF['datestr'] = self.sliderDF(self.t]
+
+        for _, var_name in list(self.vars.items()):
+
+            self.data[var_name] = data_grp.variables[var_name][:]
+
+        data_grp.close()
+
+    def flatten_at_single_time(self, var_name, selected_date=None):
+        if selected_date is None:
+            print(f'No time given, defaulting to {self.t[0]} instead!')
+            #selected_date = self.t[0]
+            selected_date = self.t[0]
+
+        date_indx = self.slider_dict[selected_date]
+
+        single_slice = pd.DataFrame(self.data[self.vars[var_name]][date_indx, :, :], index=self.lats, columns=self.lons)
+
+        return single_slice
+
+    def flatten_to_latlons(self, var_name, selected_date=None):
+        if selected_date is None:
+            print(f'No time given, defaulting to {next(iter(self.slider_dict))} instead!')
+            selected_date = next(iter(self.slider_dict))
+
+        time_indx = self.slider_dict[selected_date]
+        # time_indx = int(np.where(self.t == selected_date)[0][0])
+
+        dt = self.data[self.vars[var_name]][time_indx, :, :]
+
+        XX, YY = np.meshgrid(np.arange(dt.shape[1]), np.arange(dt.shape[0]))
+        table = np.vstack((dt.ravel(), XX.ravel(), YY.ravel())).T
+        #table = np.delete(table, np.where(table[:, 0] == np.nan), axis=0)
+        table = table[~np.isnan(table).any(axis=1)]
+        table[:, 0] = np.round(table[:, 0], 3)
+        table[:, 1] = (table[:, 1]/2) - 180
+        table[:, 2] = (table[:, 2]/2) - 90
+
+        return table
+
+    def ret_time_series(self, var_name, lon, lat):
+
+        dat = pd.DataFrame(self.data[self.vars[var_name]][:, np.where(self.lats == lat)[0][0], np.where(self.lons == lon)[0][0]], columns=['dat'])
+        dat['5day'] = dat['dat'].rolling(5, min_periods=1).mean()
+        dat['14day'] = dat['dat'].rolling(14, min_periods=1).mean()
+
+        return dat
+
 
 @dataclass
 class NCSet:
@@ -72,26 +141,6 @@ class NCSet:
         table[:, 2] = (table[:, 2]/2) - 90
 
         return table
-
-    def slider_dict(self):
-
-        tdelt = int((self.dates['dt'].max() - self.dates['dt'].min()).days)
-        # temp = self.dates['dt'].dt.year.drop_duplicates(keep='first')
-        temp = self.dates['dt'].dt.year
-        #ticks = dict(zip(self.dates['dt'].astype('str'), temp.astype('str').to_list()))
-        ticks = dict(zip(list(range(len(self.dates))), temp.astype('str').to_list()))
-
-
-        # This will adjust the slider ticks to be days, months or years as is appropriate to the amount of data
-
-        if tdelt < 95:
-            temp = [datetime.datetime.strftime(n, '%d/%m') for n in self.dates['dt']]
-            ticks = dict(zip(list(range(len(self.dates))), temp))
-        elif (tdelt < 1200) and (tdelt >= 95):
-            temp = [datetime.datetime.strftime(n, '%Y') for n in self.dates['dt'].dt.month.drop_duplicates(keep='first')]
-            ticks = dict(zip(list(range(len(self.dates))), temp))
-
-        return ticks
 
     def ret_time_series(self, lon, lat):
 

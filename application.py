@@ -19,29 +19,6 @@ import numpy as np
 Data
 '''
 
-# laptop
-# files = {
-#     'temp_max': "C:\\Datasets\\Weather Data\\Copernicus\\Temp Max\\tasmaxAdjust_day_GFDL-ESM2G_SMHI-DBSrev930-GFD-1981-2010-postproc_rcp45_r1i1p1_20160101-20201231.nc",
-#     'temp_mean': "C:\\Datasets\\Weather Data\\Copernicus\\Temp Mean\\tasAdjust_day_GFDL-ESM2G_SMHI-DBSrev930-GFD-1981-2010-postproc_rcp45_r1i1p1_20160101-20201231.nc",
-#     'temp_min': "C:\\Datasets\\Weather Data\\Copernicus\\Temp Min\\tasminAdjust_day_GFDL-ESM2G_SMHI-DBSrev930-GFD-1981-2010-postproc_rcp45_r1i1p1_20160101-20201231.nc",
-#     'precip': "C:\\Datasets\\Weather Data\\Copernicus\\Precip Flux\\prAdjust_day_GFDL-ESM2G_SMHI-DBSrev930-GFD-1981-2010-postproc_rcp45_r1i1p1_20160101-20201231.nc"
-#     }
-# desktop
-# files = {
-#     'temp_max': "/media/disc1/Datasets/Weather Data/Copernicus/Temp Max/tasmaxAdjust_day_GFDL-ESM2G_SMHI-DBSrev930-GFD-1981-2010-postproc_rcp45_r1i1p1_20010101-20051231.nc",
-#     'temp_mean': "/media/disc1/Datasets/Weather Data/Copernicus/Temp Mean/tasAdjust_day_GFDL-ESM2G_SMHI-DBSrev930-GFD-1981-2010-postproc_rcp45_r1i1p1_20010101-20051231.nc",
-#     'temp_min': "/media/disc1/Datasets/Weather Data/Copernicus/Temp Min/tasminAdjust_day_GFDL-ESM2G_SMHI-DBSrev930-GFD-1981-2010-postproc_rcp45_r1i1p1_20010101-20051231.nc",
-#     'precip': "/media/disc1/Datasets/Weather Data/Copernicus/Precip Flux/prAdjust_day_GFDL-ESM2G_SMHI-DBSrev930-GFD-1981-2010-postproc_rcp45_r1i1p1_20010101-20051231.nc"
-# }
-
-# small files
-# files = {
-#     'temp_max': "./data/tasmaxAdjust_20010101-20010201.nc",
-#     'temp_mean': "./data/tasAdjust_20010101-20010201.nc",
-#     'temp_min': "./data/tasminAdjust_20010101-20010201.nc",
-#     'precip': "./data/prAdjust_20010101-20010201.nc"
-# }
-
 var_names = {'temp_max': 'tasmaxAdjust',
              'temp_min': 'tasminAdjust',
              'temp_mean': 'tasAdjust',
@@ -59,8 +36,7 @@ dropdown_datasets = [#{'label':  '',     'value':   'none'},
              {'label':  'Precipitation',       'value':   'precip'}
              ]
 
-#default_group = open_nc.multiVarNCSet('./data/master_20010101-20010201.nc', var_names)
-default_group = open_nc.multiVarNCSet('/home/shjewell/PycharmProjects/basic_geo_dashboard/data/master_20010101-20051231.nc', var_names)
+default_group = open_nc.multiVarNCSet('./data/master_20010101-20010201.nc', var_names)
 df = default_group.flatten_at_single_time('temp_mean')
 lats = default_group.lats
 lons = default_group.lons
@@ -83,7 +59,8 @@ colors = {'background': '#111111', 'text': '#7FDBFF'}
 app = dash.Dash(__name__,
                 meta_tags=[{"name": "viewport", "content": "width=device-width, initial-scale=1"}],
                 external_stylesheets=[dbc.themes.SLATE])
-# server = app.server
+application = app.server
+server = app.server
 
 ts = go.Figure()
 ts.update_layout(paper_bgcolor='#515960', plot_bgcolor='#515960',
@@ -213,4 +190,5 @@ def map_single_time(date, set):
     return map_date, map, date
 
 if __name__ == '__main__':
-    app.run_server(debug=True)
+    #app.run_server(debug=True)
+    application.run(port=8080)

@@ -25,8 +25,11 @@ class multiVarNCSet:
             datestr.append(self.t[n].strftime('%Y-%m-%d'))
 
         self.slider_dict = dict(zip(self.t, list(range(len(self.t)))))
-        # self.sliderDF = pd.DataFrame([self.t, datestr], columns=['date', 'datestr'])
-        # self.sliderDF['datestr'] = self.sliderDF(self.t]
+        # self.slider_dict = dict(zip(list(range(len(self.t))), self.t))
+
+        df = pd.DataFrame(pd.to_datetime(self.t), index=range(len(self.t)), columns=['dati'])
+        df['my'] = df['dati'].dt.strftime("%b-%Y")
+        self.slider_marks = dict(zip(df.groupby('my').head(1)['my'].index, df.groupby('my').head(1)['my']))
 
         for _, var_name in list(self.vars.items()):
 

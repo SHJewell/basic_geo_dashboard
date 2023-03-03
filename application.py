@@ -29,14 +29,13 @@ human_names = {'temp_max':      'Temperature Max',
                'temp_mean':     'Temperature Mean',
                'precip':        'Precipitation'}
 
-dropdown_datasets = [#{'label':  '',     'value':   'none'},
-             {'label':  'Temperature Max',     'value':   'temp_max'},
+dropdown_datasets = [{'label':  'Temperature Max',     'value':   'temp_max'},
              {'label':  'Temperature Min',     'value':   'temp_min'},
              {'label':  'Temperature Mean',    'value':   'temp_mean'},
              {'label':  'Precipitation',       'value':   'precip'}
              ]
 
-default_group = open_nc.multiVarNCSet('./data/master_20010101-20010201.nc', var_names)
+default_group = open_nc.multiVarNCSet('./master_20010101-20010201.nc', var_names)
 df = default_group.flatten_at_single_time('temp_mean')
 lats = default_group.lats
 lons = default_group.lons
@@ -60,7 +59,9 @@ app = dash.Dash(__name__,
                 meta_tags=[{"name": "viewport", "content": "width=device-width, initial-scale=1"}],
                 external_stylesheets=[dbc.themes.SLATE])
 application = app.server
-server = app.server
+#server = app.server
+app.title = "Basic Geospatial Dashboard"
+
 
 ts = go.Figure()
 ts.update_layout(paper_bgcolor='#515960', plot_bgcolor='#515960',
@@ -70,7 +71,7 @@ ts.update_layout(paper_bgcolor='#515960', plot_bgcolor='#515960',
 analysis_tab = dbc.Card(
     dbc.CardBody(id='analysis-card',
         children=[
-            dbc.Row([dhtml.H2(f'No point selected', id='loc_label')]),
+            dbc.Row([dhtml.H2(f'Click map to plot time series', id='loc_label')]),
             dbc.Row([
                 dcc.Loading(dcc.Graph(id='time_series', figure=ts))
             ])
@@ -113,7 +114,11 @@ map_page = dbc.Card(
 app.layout = dhtml.Div([
     dbc.CardBody(
         id='main_card',
-        children=[dbc.Card(map_page)]
+        children=[dbc.Card(map_page),
+                  dcc.Link('By SHJewell', href=f'https://shjewell.com'),
+                  dhtml.H6(f'Built using Python and Plotly Dash'),
+                  dcc.Link('Source code', href=f'https://github.com/SHJewell/basic_geo_dashboard')
+                  ]
     )
 ])
 
@@ -140,7 +145,7 @@ def plot_time_series(points, set):
 
     if 'temp' in set:
         #hovertxt = '%{x|%m/%d/%Y}<br>%{y:.2f}°C'
-        hovertxt = '%{x|%m/%d/%Y}<br>%{y:.2f}°K'
+        hovertxt = '%{x|%m/%d/%Y}<br>%{y:.2f}K'
         #axis_label = 'Temperature (°C)'
         axis_label = 'Temperature (K)'
 

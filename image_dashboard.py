@@ -42,25 +42,32 @@ Data
 #     'precip': "./data/prAdjust_20010101-20010201.nc"
 # }
 
-var_names = {'temp_max': 'tasmaxAdjust',
-             'temp_min': 'tasminAdjust',
-             'temp_mean': 'tasAdjust',
+# var_names = {'temp_max': 'tasmaxAdjust',
+#              'temp_min': 'tasminAdjust',
+var_names = {'temp_mean': 'tasAdjust',
              'precip': 'prAdjust'}
 
-human_names = {'temp_max':      'Temperature Max',
-               'temp_min':      'Temperature Min',
-               'temp_mean':     'Temperature Mean',
+# human_names = {'temp_max':      'Temperature Max',
+#                'temp_min':      'Temperature Min',
+human_names = {'temp_mean':     'Temperature Mean',
                'precip':        'Precipitation'}
 
+# dropdown_datasets = [#{'label':  '',     'value':   'none'},
+#              {'label':  'Temperature Max',     'value':   'temp_max'},
+#              {'label':  'Temperature Min',     'value':   'temp_min'},
+#              {'label':  'Temperature Mean',    'value':   'temp_mean'},
+#              {'label':  'Precipitation',       'value':   'precip'}
+#              ]
+
 dropdown_datasets = [#{'label':  '',     'value':   'none'},
-             {'label':  'Temperature Max',     'value':   'temp_max'},
-             {'label':  'Temperature Min',     'value':   'temp_min'},
              {'label':  'Temperature Mean',    'value':   'temp_mean'},
              {'label':  'Precipitation',       'value':   'precip'}
              ]
 
 #default_group = open_nc.multiVarNCSet('./data/master_20010101-20010201.nc', var_names)
-default_group = open_nc.multiVarNCSet('/home/shjewell/PycharmProjects/basic_geo_dashboard/data/master_20010101-20051231.nc', var_names)
+#default_group = open_nc.multiVarNCSet('/home/shjewell/PycharmProjects/basic_geo_dashboard/data/master_20010101-20051231.nc', var_names)
+#default_group = open_nc.multiVarNCSet('./data/master-20200101-1-20201231.nc', var_names)
+default_group = open_nc.multiVarNCSet('/media/disc1/Datasets/Weather Data/Processed/stats-20200101-1-20201231.nc', var_names)
 df = default_group.flatten_at_single_time('temp_mean')
 lats = default_group.lats
 lons = default_group.lons
@@ -93,7 +100,7 @@ ts.update_layout(paper_bgcolor='#515960', plot_bgcolor='#515960',
 analysis_tab = dbc.Card(
     dbc.CardBody(id='analysis-card',
         children=[
-            dbc.Row([dhtml.H2(f'No point selected', id='loc_label')]),
+            dbc.Row([dhtml.H2(f'Click map to plot time series', id='loc_label')]),
             dbc.Row([
                 dcc.Loading(dcc.Graph(id='time_series', figure=ts))
             ])
@@ -118,9 +125,7 @@ map_page = dbc.Card(
                         dcc.Slider(id='time_slider',
                                    min=default_group.slider_dict[default_group.t[0]],
                                    max=default_group.slider_dict[default_group.t[-1]],
-                                   #min=default_group.sliderDF.min(),
-                                   #max=default_group.t[-1],
-                                   #marks=default_group.t,
+                                   marks=default_group.slider_marks,
                                    value=0,
                                    tooltip={"always_visible": False}
                                    ),
@@ -163,7 +168,7 @@ def plot_time_series(points, set):
 
     if 'temp' in set:
         #hovertxt = '%{x|%m/%d/%Y}<br>%{y:.2f}°C'
-        hovertxt = '%{x|%m/%d/%Y}<br>%{y:.2f}°K'
+        hovertxt = '%{x|%m/%d/%Y}<br>%{y:.2f}K'
         #axis_label = 'Temperature (°C)'
         axis_label = 'Temperature (K)'
 

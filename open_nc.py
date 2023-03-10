@@ -21,8 +21,11 @@ class multiVarNCSet:
         datestr = []
 
         for n, elem in enumerate(data_grp.variables['time'][:]):
-            self.t.append(datetime.timedelta(days=round(elem)) + datetime.date(year=1850, month=1, day=1))
+
+            dayn = int(np.floor(elem))
+            self.t.append(datetime.timedelta(days=dayn) + datetime.date(year=1850, month=1, day=1))
             datestr.append(self.t[n].strftime('%Y-%m-%d'))
+
 
         self.slider_dict = dict(zip(self.t, list(range(len(self.t)))))
         # self.slider_dict = dict(zip(list(range(len(self.t))), self.t))

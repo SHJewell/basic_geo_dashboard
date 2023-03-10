@@ -35,7 +35,7 @@ dropdown_datasets = [{'label':  'Temperature Max',     'value':   'temp_max'},
              {'label':  'Precipitation',       'value':   'precip'}
              ]
 
-default_group = open_nc.multiVarNCSet('./master_20010101-20010201.nc', var_names)
+default_group = open_nc.multiVarNCSet('master-20200101-1-20200131.nc', var_names)
 df = default_group.flatten_at_single_time('temp_mean')
 lats = default_group.lats
 lons = default_group.lons
@@ -59,7 +59,6 @@ app = dash.Dash(__name__,
                 meta_tags=[{"name": "viewport", "content": "width=device-width, initial-scale=1"}],
                 external_stylesheets=[dbc.themes.SLATE])
 application = app.server
-#server = app.server
 app.title = "Basic Geospatial Dashboard"
 
 
@@ -152,8 +151,8 @@ def plot_time_series(points, set):
     plt = go.Figure(go.Scatter(y=ts['dat'], x=default_group.t,
                                mode='markers', hovertemplate=hovertxt,
                                name='Daily'))
-    #plt.add_trace(go.Scatter(y=ts['5day'], x=default_group.dates['dt'], hovertemplate=hovertxt))
-    plt.add_trace(go.Scatter(y=ts['14day'], x=default_group.t, hovertemplate=hovertxt, name='14-day Average'))
+    plt.add_trace(go.Scatter(y=ts['5day'], x=default_group.t, hovertemplate=hovertxt, name='5-day Average'))
+    #plt.add_trace(go.Scatter(y=ts['14day'], x=default_group.t, hovertemplate=hovertxt, name='14-day Average'))
 
     plt.update_layout(paper_bgcolor='#515960', plot_bgcolor='#515960',
                       font_color='white',

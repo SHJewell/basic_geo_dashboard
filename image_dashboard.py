@@ -67,7 +67,8 @@ dropdown_datasets = [#{'label':  '',     'value':   'none'},
 #default_group = open_nc.multiVarNCSet('./data/master_20010101-20010201.nc', var_names)
 #default_group = open_nc.multiVarNCSet('/home/shjewell/PycharmProjects/basic_geo_dashboard/data/master_20010101-20051231.nc', var_names)
 #default_group = open_nc.multiVarNCSet('./data/master-20200101-1-20201231.nc', var_names)
-default_group = open_nc.multiVarNCSet('/media/disc1/Datasets/Weather Data/Processed/stats-20200101-1-20201231.nc', var_names)
+#default_group = open_nc.multiVarNCSet('/home/shjewell/PycharmProjects/basic_geo_dashboard/data/master-20200101-1-20201231.nc', var_names)
+default_group = open_nc.multiVarNCSet('/home/shjewell/PycharmProjects/basic_geo_dashboard/data/master-20200101-1-20200131.nc', var_names)
 df = default_group.flatten_at_single_time('temp_mean')
 lats = default_group.lats
 lons = default_group.lons
@@ -176,6 +177,7 @@ def plot_time_series(points, set):
                                mode='markers', hovertemplate=hovertxt,
                                name='Daily'))
     #plt.add_trace(go.Scatter(y=ts['5day'], x=default_group.dates['dt'], hovertemplate=hovertxt))
+    plt.add_trace(go.Scatter(y=ts['5day'], x=default_group.t, hovertemplate=hovertxt, name='5-day Average'))
     plt.add_trace(go.Scatter(y=ts['14day'], x=default_group.t, hovertemplate=hovertxt, name='14-day Average'))
 
     plt.update_layout(paper_bgcolor='#515960', plot_bgcolor='#515960',
@@ -218,4 +220,4 @@ def map_single_time(date, set):
     return map_date, map, date
 
 if __name__ == '__main__':
-    app.run_server(debug=True)
+    app.run_server(debug=True, port=8070)

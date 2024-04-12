@@ -12,7 +12,6 @@ from pprint import pprint
 
 #non-plotly imports
 import open_nc
-import numpy as np
 
 '''
 ========================================================================================================================
